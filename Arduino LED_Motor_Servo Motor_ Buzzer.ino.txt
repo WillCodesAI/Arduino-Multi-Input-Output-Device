@@ -1,0 +1,96 @@
+// The light sensor will controll the brightness of the LED, when it is dark, the LED will become brighter
+int LEDpin=11;//pin 11 will be for the led
+int lightpin=A0;//pin a0 will read input from the light sensor
+int bright=0;//dummy value
+int Bright=0;//dummy value
+//Flex sensor will controll the servo 
+int servpin=9;//servo pin 9
+int flexpin=A1;//flex sensor pin A1
+int flex=0;//dummy value
+int Flex=0;//Dummy value
+const int n=100; //number of values to adverage as a calibration 
+int val[n];      // input value for calibration
+int dex=0;              // the index number of the calibration itteration
+float average;            //final value for calibration 
+int sum=0;                  // the sum of all itterations
+#include <Servo.h> //include the servo library 
+Servo servo1;//name the servo
+//touch sensor will control the motor, touching the sensor makes the motor spin faster 
+int Mpin=6;//Motor from pin 6
+int touchme=A2;//input from touch sensor goes to A2
+int touch=0;//Dummy value
+int Touch=0; //dummy value
+int tal[n];//input value for calibration
+int dexT=0;//index number
+float averageT;//final value for calibration
+int sumT=0;// sum of all itterations
+//Piezospeaker and potentiometer
+int GodPleaseMakeTheBuzzingStop=5;//MAKE IT STOP!!!!AHHHHH!!!! Piezo is hooked up to pin 5
+int PotatoPin=A3;//Input to A3
+int annoying=0;//dummy value
+int ANNOYING=0;//dummy value
+int bal[n];//input value for calibration
+int dexB=0;//index number
+float averageB;//final value for calibration
+int sumB=0;//sum of all calibration itterations
+// 
+void setup() {
+  Serial.begin(9600);//turn the serial moniter on
+  //LED
+  pinMode(LEDpin,OUTPUT);//tell LEDpin to be an output
+  //Servo
+  pinMode(servpin,OUTPUT);//tell servepin to be an output
+  servo1.attach(9);//the servo is attached to pin 9
+  for (int i=0; i<n; i++) {//start at 0//loop will help to take an average reading of flex sensor
+    val[dex] = analogRead(flexpin);// create an array to zero the sensor
+    sum=sum+val[dex];//sum each value 
+    dex = dex+1;//move to the next index
+  }
+average=sum/n;//calculate the average reading of flex sensor
+//Motor
+for (int i=0; i<100; i++) {//start at 0//loop will help to take an average reading of touch sensor
+    tal[dexT] = analogRead(touchme);// create an array of readings
+    sumT=sumT+tal[dexT];//sum each value 
+    dexT = dexT+1;//move to the next index
+}
+averageT=sumT/100;//Calibration number
+//Serial.print(averageT);
+//
+//Piezospeaker and Potientiometer 
+for(int i=0; i<n; i++){//loop will help calibrate the sensor readings 
+  bal[dexB]=analogRead(PotatoPin);//create an array of readings
+  sumB=sumB+bal[dexB];//sum each value
+  dexB=dexB+1;//move to the next index
+}
+averageB=sumB/n;
+}
+
+
+
+
+void loop() {
+ //LED and photoresistor 
+ bright=analogRead(lightpin);//read the value from the light sensor
+ Bright=map(bright,0,1023,255,0);//map low sensor readings to high output and high sensor readings to low output
+ analogWrite(LEDpin,Bright);//output at LEDpin at an intensity of the value of Bright
+ Serial.print("Input value of light is ");
+ Serial.println(bright);
+ //flex sensor and servo
+flex=analogRead(flexpin);//read the value from the flex sensor
+Flex=map(flex,average,1023,0,180);//map average to 0 and 1023 to 180
+servo1.write(Flex);//gives the servo a position
+Serial.print("Input value of flex is ");//prints...
+Serial.println(flex);//prints the input 
+//motor and touch sensor
+touch=analogRead(touchme);//read the touch sensor input
+Touch=map(touch,averageT,1023,0,255);//The motor won't spin at the start, but pressing the sensor will make it spin
+analogWrite(Mpin,Touch);//output value Touch to pin Mpin
+Serial.print("Input value of touch is ");//write...
+Serial.println(touch);//write and new line
+//Piezospeaker and potentiometer
+annoying=analogRead(PotatoPin);//Read analog data from A3
+ANNOYING=map(annoying,averageB,1023,100,1000);//MAP average to 100 hz, and 1023 to 1000
+tone(GodPleaseMakeTheBuzzingStop,ANNOYING);//make some noise from pin... at frequency ANNOYING
+Serial.print("The input from the Potentiometer is ");//PRINT
+Serial.println(annoying);//print
+}
