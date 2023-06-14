@@ -1,7 +1,7 @@
 # Arduino-Multi-Input-Output-Device
 Check out the README FILE for an explanation of what this does.  
 
-This Codes does the following things for an Arduino Device. 
+This Codes does the following things for an Arduino Device:
 
 Reads the light sensor value from lightpin and maps it to a brightness value for the LED using analogWrite.
 
